@@ -21,6 +21,8 @@ const CreateUserScreen=(props)=>{
                 const docRef = await addDoc(ref, state);
                 console.log("Document written with ID: ", docRef.id);
                 alert('Usuario guardado');
+
+                props.navigation.navigate('Home', { userData: state });
             } catch (err) {
                 console.error("Error adding document: ", err);
             }
