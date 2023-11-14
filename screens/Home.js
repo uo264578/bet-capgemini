@@ -1,6 +1,7 @@
 // Home.js
 import React from 'react';
 import { View, Text, Button } from 'react-native';
+import Futbol from './Futbol';
 
 export default function Home({ navigation }) {
   return (

@@ -1,66 +1,80 @@
-// Tenis.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { firebase } from '@react-native-firebase/database';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList } from 'react-native';
+import { app } from '../database/firebase';
+import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
 
-export default function Tenis() {
-  const [monto, setMonto] = useState('');
-  const [equipoSeleccionado, setEquipoSeleccionado] = useState('');
+const firestore = getFirestore(app);
+const partidosTenisCollection = collection(firestore, 'PartidosTenis');
 
-  const handleApostar = () => {
-    const usuarioId = firebase.auth().currentUser.uid;
+const PartidosTenisScreen = () => {
+  const [partidosTenis, setPartidosTenis] = useState([]);
 
-    firebase.database().ref(`/apuestas/tenis/${usuarioId}`).push({
-      monto,
-      equipoSeleccionado,
-      fecha: new Date().toString(),
+  useEffect(() => {
+    const obtenerPartidosTenis = async () => {
+      try {
+        const querySnapshot = await getDocs(partidosTenisCollection);
+        const partidosTenisData = querySnapshot.docs.map((doc) => doc.data());
+        console.log(partidosTenisData);
+        setPartidosTenis(partidosTenisData);
+      } catch (error) {
+        console.error('Error al leer datos de partidosTenis:', error);
+      }
+    };
+
+    obtenerPartidosTenis();
+    console.log(partidosTenisCollection);
+    const unsubscribe = onSnapshot(partidosTenisCollection, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        // Actualiza el estado con el nuevo dato en tiempo real
+        setPartidosTenis((prevPartidosTenis) => {
+          const updatedPartidosTenis = [...prevPartidosTenis];
+          const changedPartido = change.doc.data();
+          const index = updatedPartidosTenis.findIndex(
+            (partido) => partido.id === change.doc.id
+          );
+
+          if (change.type === 'added') {
+            // Añade el nuevo partido
+            updatedPartidosTenis.push(changedPartido);
+          } else if (change.type === 'modified') {
+            // Actualiza el partido existente
+            updatedPartidosTenis[index] = changedPartido;
+          } else if (change.type === 'removed') {
+            // Elimina el partido existente
+            updatedPartidosTenis.splice(index, 1);
+          }
+
+          return updatedPartidosTenis;
+        });
+      });
     });
-  };
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Página de Apuestas de Tenis</Text>
-      <Text style={styles.label}>Ingrese la información de su apuesta:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Monto"
-        keyboardType="numeric"
-        value={monto}
-        onChangeText={(text) => setMonto(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Equipo seleccionado"
-        value={equipoSeleccionado}
-        onChangeText={(text) => setEquipoSeleccionado(text)}
-      />
-      <Button title="Apostar" onPress={handleApostar} />
+    <View>
+      <Text>Lista de Partidos de Tenis</Text>
+      <FlatList
+        data={partidosTenis}
+        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+        renderItem={({ item }) => (
+        <View key={item.id}>
+          <Text>Jugador 1: {item.id}</Text>
+          <Text>Jugador 2: {item.jugador2}</Text>
+          <Text>Cuota 1: {item.cuota1}</Text>
+          <Text>Cuota 2: {item.cuota2}</Text>
+          <Text>Fecha: {item.fecha}</Text>
+          <Text>--------------------------</Text>
+        </View>
+  )}
+/>
+
+
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 10,
-  },
-});
+export default PartidosTenisScreen;
