@@ -91,6 +91,7 @@ const PartidosTenisScreen = () => {
   return (
     <View>
     <Text style={{ fontSize: 30, color: 'green' }}>Lista de Partidos de Tenis</Text>
+    
     <FlatList
       data={partidosTenis}
       keyExtractor={(item, index) => (item.id ? item.id : index)}
@@ -121,11 +122,30 @@ const PartidosTenisScreen = () => {
               <Text style={styles.buttonText}>{item.Cuota2}</Text>
             </TouchableOpacity>
           </View>
+          
         </View>
       )}
     />
+     {equipoSeleccionado !== '' && (
+        <>
+          <Text style={{ fontSize: 24 }}>Ingrese la cantidad apostada:</Text>
+          <Text style={{ fontSize: 20 }}>Cuota:</Text>
+          <Text style={{ fontSize: 24 }}>{cuota}</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Cantidad"
+            keyboardType="numeric"
+            value={monto}
+            onChangeText={(text) => setMonto(text)}
+          />
+          <Text style={{ fontSize: 24 }}>Posibles ganancias: {cuota * monto} €</Text>
+          <Button title="Confirmar Apuesta" onPress={handleConfirmarApuesta} color="#841584"/>
+        </>
+      )}
   </View>
+  
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -159,7 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 25,
     marginBottom: 8,
   },
   input: {
@@ -169,7 +189,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     paddingHorizontal: 10,
+    fontSize: 20,
   },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  }
 });
 
 
