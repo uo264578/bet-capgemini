@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { app } from '../database/firebase';
 import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
+import { getDatabase, ref, push } from 'firebase/database';
+
 
 const firestore = getFirestore(app);
 const partidosTenisCollection = collection(firestore, 'PartidosTenis');
@@ -19,28 +21,40 @@ const PartidosTenisScreen = () => {
 
   const handleConfirmarApuesta = () => {
     const usuarioId = firebase.auth().currentUser.uid;
-
+    const db = getDatabase();
+  
     // Validar la cantidad apostada
     const parsedMonto = parseFloat(monto);
     if (isNaN(parsedMonto) || parsedMonto <= 0) {
       Alert.alert('Cantidad inválida', 'Ingrese una cantidad válida para apostar.');
       return;
     }
-
-    // Realizar la apuesta usando la cantidad, cuota y otros detalles
-    firebase.database().ref(`/apuestas/${usuarioId}`).push({
+  
+    // Referencia a la tabla de apuestas
+    const apuestasRef = ref(db, `/apuesta`);
+  
+    // Crear un nuevo registro de apuesta
+    const nuevaApuesta = {
       monto: parsedMonto,
       cuota: parseFloat(cuota),
       fecha: new Date().toString(),
       ganador: equipoSeleccionado,
-      ganancia: parsedMonto * cuota, // Ganancia es igual a la cantidad apostada en este caso
+      ganancia: parsedMonto * cuota,
       idUsuario: usuarioId,
-    });
-
-    // Reiniciar el estado después de la apuesta
-    setMonto('');
-    setCuota('');
-    setEquipoSeleccionado('');
+    };
+  
+    // Empujar los datos de la nueva apuesta a Firebase
+    push(apuestasRef, nuevaApuesta)
+      .then(() => {
+        // Reiniciar el estado después de la apuesta
+        setMonto('');
+        setCuota('');
+        setEquipoSeleccionado('');
+        // Agregar aquí cualquier otra lógica después de realizar la apuesta
+      })
+      .catch((error) => {
+        console.error('Error al crear la apuesta:', error);
+      });
   };
 
   useEffect(() => {

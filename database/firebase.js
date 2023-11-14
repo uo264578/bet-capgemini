@@ -11,4 +11,4 @@ appId:"1:12657127604:android:3a7a850927d9cae048a7e1"
 }
 
 const app= initializeApp(firebaseConfig);
-export {app};
+export default app;
