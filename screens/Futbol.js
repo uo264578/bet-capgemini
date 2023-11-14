@@ -3,11 +3,18 @@ import { View, Text,FlatList, Button, StyleSheet, TouchableOpacity, TextInput, A
 import { firebase } from '@react-native-firebase/database';
 import { app } from '../database/firebase';
 import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
+import { Ionicons } from '@expo/vector-icons'; 
+import Home from './Home';
+import Baloncesto from './Baloncesto';
+import Tenis from './Tenis';
+import CarrerasCaballos from './CarrerasCaballos';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const firestore = getFirestore(app);
 const partidosFutbolCollection = collection(firestore, 'partidosFutbol');
+const Stack = createStackNavigator();
 
-export default function Futbol() {
+export default function Futbol({ navigation }) {
   const [partidosFutbol, setPartidosFutbol] = useState([]);
   const [monto, setMonto] = useState('');
   const [cuota, setCuota] = useState('');
@@ -63,7 +70,9 @@ export default function Futbol() {
 
   return (
     <View>
-    <Text style={{ fontSize: 30, color: 'green' }}>Lista de Partidos de Futbol</Text>
+    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Futbol
+    <Ionicons name="md-football" size={40} color="black" />
+    </Text>
     
     <FlatList
       data={partidosFutbol}
@@ -122,6 +131,12 @@ export default function Futbol() {
           <Button title="Confirmar Apuesta" onPress={handleConfirmarApuesta} color="#841584"/>
         </>
       )}
+      <View style={styles.bottomContainerAbajo}>
+        <Button title="Home" onPress={() => navigation.navigate('Home')} />
+        <Button title="Baloncesto" onPress={() => navigation.navigate('Baloncesto')} />
+        <Button title="Tenis" onPress={() => navigation.navigate('Tenis')} />
+        <Button title="Carreras de Caballos" onPress={() => navigation.navigate('CarrerasCaballos')} />
+      </View>
   </View>
   
   );
@@ -174,7 +189,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-  }
+  },
+  bottomContainerAbajo: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
+  },
 });
 
 

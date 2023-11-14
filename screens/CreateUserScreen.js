@@ -1,7 +1,7 @@
 import {View, Text, Button, TextInput, StyleSheet, ScrollView } from 'react-native';
 import React, {useState, setState} from 'react';
 
-import {firestore} from "../database/firebase";
+import firebase from 'firebase/app';
 import {addDoc, collection} from "@firebase/firestore";
 
 const CreateUserScreen=(props)=>{
@@ -16,7 +16,9 @@ const CreateUserScreen=(props)=>{
         if (state.name === '') {
             alert('Usuario sin nombre');
         } else {
-            const ref = collection(firestore, "users");
+            const db = firebase.firestore();
+            const ref = db.collection('users');
+
             try {
                 const docRef = await addDoc(ref, state);
                 console.log("Document written with ID: ", docRef.id);

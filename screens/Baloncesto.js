@@ -3,12 +3,15 @@ import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity, TextInput, 
 import { app } from '../database/firebase';
 import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
 import { getDatabase, ref, push } from 'firebase/database';
+import { Ionicons } from '@expo/vector-icons'; 
+import { createStackNavigator } from '@react-navigation/stack';
 
+const Stack = createStackNavigator();
 
 const firestore = getFirestore(app);
 const partidosBaloncestoCollection = collection(firestore, 'PartidosBaloncesto');
 
-const PartidosBaloncestoScreen = () => {
+const PartidosBaloncestoScreen = ({ navigation }) => {
   const [partidosBaloncesto, setPartidosBaloncesto] = useState([]);
   const [monto, setMonto] = useState('');
   const [cuota, setCuota] = useState('');
@@ -74,7 +77,10 @@ const PartidosBaloncestoScreen = () => {
 
   return (
     <View>
-    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Baloncesto</Text>
+    
+    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Baloncesto
+    <Ionicons name="md-basketball" size={40} color="orange" style={styles.icon} />
+    </Text>
     
     <FlatList
       data={partidosBaloncesto}
@@ -127,6 +133,12 @@ const PartidosBaloncestoScreen = () => {
           <Button title="Confirmar Apuesta" onPress={handleConfirmarApuesta} color="#841584"/>
         </>
       )}
+      <View style={styles.bottomContainerAbajo}>
+        <Button title="Home" onPress={() => navigation.navigate('Home')} />
+        <Button title="Tenis" onPress={() => navigation.navigate('Tenis')} />
+        <Button title="Futbol" onPress={() => navigation.navigate('Futbol')} />
+        <Button title="Carreras de Caballos" onPress={() => navigation.navigate('CarrerasCaballos')} />
+      </View>
   </View>
   
   );
@@ -179,7 +191,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-  }
+  },
+  bottomContainerAbajo: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
+  },
 });
 
 

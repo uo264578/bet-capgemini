@@ -3,12 +3,14 @@ import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity, TextInput, 
 import { app } from '../database/firebase';
 import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
 import { getDatabase, ref, push } from 'firebase/database';
+import { Ionicons } from '@expo/vector-icons'; 
+import { createStackNavigator } from '@react-navigation/stack';
 
-
+const Stack = createStackNavigator();
 const firestore = getFirestore(app);
 const partidosTenisCollection = collection(firestore, 'PartidosTenis');
 
-const PartidosTenisScreen = () => {
+const PartidosTenisScreen = ({ navigation }) => {
   const [partidosTenis, setPartidosTenis] = useState([]);
   const [monto, setMonto] = useState('');
   const [cuota, setCuota] = useState('');
@@ -104,7 +106,9 @@ const PartidosTenisScreen = () => {
 
   return (
     <View>
-    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Tenis</Text>
+    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Tenis
+    <Ionicons name="md-tennisball" size={35} color="#FFBB00" />
+    </Text>
     
     <FlatList
       data={partidosTenis}
@@ -157,6 +161,12 @@ const PartidosTenisScreen = () => {
           <Button title="Confirmar Apuesta" onPress={handleConfirmarApuesta} color="#841584"/>
         </>
       )}
+      <View style={styles.bottomContainerAbajo}>
+        <Button title="Home" onPress={() => navigation.navigate('Home')} />
+        <Button title="Baloncesto" onPress={() => navigation.navigate('Baloncesto')} />
+        <Button title="Futbol" onPress={() => navigation.navigate('Futbol')} />
+        <Button title="Carreras de Caballos" onPress={() => navigation.navigate('CarrerasCaballos')} />
+      </View>
   </View>
   
   );
@@ -209,7 +219,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-  }
+  },
+  bottomContainerAbajo: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
+  },
 });
 
 
