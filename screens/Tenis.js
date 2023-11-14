@@ -90,7 +90,7 @@ const PartidosTenisScreen = () => {
 
   return (
     <View>
-    <Text style={{ fontSize: 30, color: 'green' }}>Lista de Partidos de Tenis</Text>
+    <Text style={{ fontSize: 30, color: 'green' }}>Lista de apuestas de Tenis</Text>
     
     <FlatList
       data={partidosTenis}
@@ -104,21 +104,21 @@ const PartidosTenisScreen = () => {
             <TouchableOpacity
               style={[
                 styles.button,
-                equipoSeleccionado === 'Jugador1' && styles.selectedButton,
+                equipoSeleccionado === item.Jugador1 && styles.selectedButton,
                 { width: 80, height: 50 },
               ]}
-              onPress={() => handleApostar('Jugador1', item.Cuota1)}>
+              onPress={() => handleApostar(item.Jugador1, item.Cuota1)}>
               <Text style={styles.buttonText}>{item.Cuota1}</Text>
             </TouchableOpacity>
           
             <TouchableOpacity
               style={[
                 styles.button,
-                equipoSeleccionado === 'Jugador2' && styles.selectedButton,
+                equipoSeleccionado === item.Jugador2 && styles.selectedButton,
                 { width: 80, height: 50 },
               ]}
               a = {item.Cuota2}
-              onPress={() => handleApostar('Jugador2', item.Cuota2)}>
+              onPress={() => handleApostar(item.Jugador2, item.Cuota2)}>
               <Text style={styles.buttonText}>{item.Cuota2}</Text>
             </TouchableOpacity>
           </View>
@@ -128,16 +128,17 @@ const PartidosTenisScreen = () => {
     />
      {equipoSeleccionado !== '' && (
         <>
-          <Text style={{ fontSize: 24 }}>Ingrese la cantidad apostada:</Text>
+          <Text style={{ fontSize: 24 }}>Ganador: {equipoSeleccionado}</Text>
           <Text style={{ fontSize: 20 }}>Cuota:</Text>
           <Text style={{ fontSize: 24 }}>{cuota}</Text>
+          <Text style={{ fontSize: 24 }}>Ingrese la cantidad apostada:</Text>
           <TextInput
             style={styles.input}
             placeholder="Cantidad"
             keyboardType="numeric"
             value={monto}
-            onChangeText={(text) => setMonto(text)}
-          />
+            onChangeText={(text) => setMonto(text)} 
+          /> 
           <Text style={{ fontSize: 24 }}>Posibles ganancias: {cuota * monto} €</Text>
           <Button title="Confirmar Apuesta" onPress={handleConfirmarApuesta} color="#841584"/>
         </>
