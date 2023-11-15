@@ -124,9 +124,11 @@ export default function Futbol({ navigation }) {
     />
      {equipoSeleccionado !== '' && (
         <>
-          <Text style={{ fontSize: 24 }}>Ingrese la cantidad apostada:</Text>
-          <Text style={{ fontSize: 20 }}>Cuota:</Text>
+          <Text style={{ fontSize: 20 }}>
+          {equipoSeleccionado.includes('Empate') ? 'Empate' : equipoSeleccionado} - Cuota:
+          </Text>
           <Text style={{ fontSize: 24 }}>{cuota}</Text>
+          <Text style={{ fontSize: 24 }}>Ingrese la cantidad apostada:</Text>
           <TextInput
             style={styles.input}
             placeholder="Cantidad"
