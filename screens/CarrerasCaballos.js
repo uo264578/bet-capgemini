@@ -14,7 +14,7 @@ const firestore = getFirestore(app);
 const CarrerasCaballosCollection = collection(firestore, 'CarrerasCaballos');
 const Stack = createStackNavigator();
 
-export default function CarrerasCaballos(navigation) {
+export default function CarrerasCaballos({navigation}) {
   const [carrerasCaballos, setCarrerasCaballos] = useState([]);
   const [monto, setMonto] = useState('');
   const [cuota, setCuota] = useState('');
@@ -81,67 +81,82 @@ export default function CarrerasCaballos(navigation) {
 
   return (
     <View>
-    <Text style={{ fontSize: 30, color: 'green' }}>Lista de caballos a correr
-    <Ionicons name="md-tennisball" size={35} color="#FFBB00" />
+    <Text style={{ fontSize: 30, color: 'green' }}>Lista de carreras a caballo
     </Text>
     
     <FlatList
       data={carrerasCaballos}
       keyExtractor={(item, index) => (item.id ? item.id : index)}
       renderItem={({ item }) => (
-        <View key={item.id} style={{ flexDirection: 'column', alignItems: 'center' }}>
+        <View>
+        <Text style={{ fontSize: 40, color: 'black' }}>Carrera</Text>
+        <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo1}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={[
-                styles.button,
+                styles.buttonContainer,
                 caballoSeleccionado === item.NombreCaballo1 && styles.selectedButton,
-                { width: 80, height: 30 },
+                { width: 80, height: 50 },
               ]}
               onPress={() => handleApostar(item.NombreCaballo1, item.Cuota1)}>
               <Text style={styles.buttonText}>{item.Cuota1}</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
           <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo2}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={[
-                styles.button,
+                styles.buttonContainer,
                 caballoSeleccionado === item.NombreCaballo2 && styles.selectedButton,
-                { width: 80, height: 30 },
+                { width: 80, height: 50 },
               ]}
               onPress={() => handleApostar(item.NombreCaballo2, item.Cuota2)}>
-              <Text style={styles.buttonText}>{item.Cuota1}</Text>
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.buttonText}>{item.Cuota2}</Text>
+          </TouchableOpacity>
+        </View>
+        <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo3}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={[
-                styles.button,
+                styles.buttonContainer,
                 caballoSeleccionado === item.NombreCaballo3 && styles.selectedButton,
-                { width: 80, height: 30 },
+                { width: 80, height: 50 },
               ]}
               onPress={() => handleApostar(item.NombreCaballo3, item.Cuota3)}>
-              <Text style={styles.buttonText}>{item.Cuota1}</Text>
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.buttonText}>{item.Cuota3}</Text>
+          </TouchableOpacity>
           <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo4}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
+          <TouchableOpacity
               style={[
-                styles.button,
+                styles.buttonContainer,
                 caballoSeleccionado === item.NombreCaballo4 && styles.selectedButton,
-                { width: 80, height: 30 },
+                { width: 80, height: 50 },
               ]}
               onPress={() => handleApostar(item.NombreCaballo4, item.Cuota4)}>
-              <Text style={styles.buttonText}>{item.Cuota1}</Text>
-            </TouchableOpacity>
-          </View>
-         
-          
+              <Text style={styles.buttonText}>{item.Cuota4}</Text>
+          </TouchableOpacity>
+        </View>  
+        <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo5}</Text>
+          <TouchableOpacity
+              style={[
+                styles.buttonContainer,
+                caballoSeleccionado === item.NombreCaballo5 && styles.selectedButton,
+                { width: 80, height: 50 },
+              ]}
+              onPress={() => handleApostar(item.NombreCaballo5, item.Cuota5)}>
+              <Text style={styles.buttonText}>{item.Cuota5}</Text>
+          </TouchableOpacity>
+          <Text style={{ width:100, fontSize: 20, color: 'blue' }}>{item.NombreCaballo6}</Text>
+          <TouchableOpacity
+              style={[
+                styles.buttonContainer,
+                caballoSeleccionado === item.NombreCaballo6 && styles.selectedButton,
+                { width: 80, height: 50 },
+              ]}
+              onPress={() => handleApostar(item.NombreCaballo6, item.Cuota6)}>
+              <Text style={styles.buttonText}>{item.Cuota6}</Text>
+          </TouchableOpacity>
+        </View>  
         </View>
-        
       )}
     />
      {caballoSeleccionado !== '' && (
@@ -185,8 +200,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: ' center',
+    marginBottom: 5,
+    backgroundColor: 'blue',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  button: {
+    backgroundColor: 'blue',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  selectedButton: {
+    backgroundColor: 'darkblue',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
+  },
   label: {
-    fontSize: 16,
+    fontSize: 25,
     marginBottom: 8,
   },
   input: {
@@ -196,5 +233,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     paddingHorizontal: 10,
+    fontSize: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  bottomContainerAbajo: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray',
   },
 });
