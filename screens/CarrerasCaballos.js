@@ -2,17 +2,15 @@ import React, { useState, useEffect  } from 'react';
 import { View, Text,FlatList, Button, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { firebase } from '@react-native-firebase/database';
 import { app } from '../database/firebase';
-import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
-import { Ionicons } from '@expo/vector-icons'; 
-import Home from './Home';
-import Baloncesto from './Baloncesto';
-import Tenis from './Tenis';
-import Futbol from './Futbol';
+import { getFirestore, collection, onSnapshot,addDoc, getDocs } from 'firebase/firestore';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getAuth } from 'firebase/auth';
 
 const firestore = getFirestore(app);
 const CarrerasCaballosCollection = collection(firestore, 'CarrerasCaballos');
 const Stack = createStackNavigator();
+const auth = getAuth();
+
 
 export default function CarrerasCaballos({navigation}) {
   const [carrerasCaballos, setCarrerasCaballos] = useState([]);
@@ -26,9 +24,8 @@ export default function CarrerasCaballos({navigation}) {
     setCuota(c);
   };
 
-  const handleConfirmarApuesta = () => {
-    const usuarioId = firebase.auth().currentUser.uid;
-    const db = getDatabase();
+  const handleConfirmarApuesta = async () => {
+    const usuarioId = auth.currentUser.uid;
   
     // Validar la cantidad apostada
     const parsedMonto = parseFloat(monto);
@@ -36,32 +33,25 @@ export default function CarrerasCaballos({navigation}) {
       Alert.alert('Cantidad inválida', 'Ingrese una cantidad válida para apostar.');
       return;
     }
-  
-    // Referencia a la tabla de apuestas
-    const apuestasRef = ref(db, `/apuesta`);
-  
-    // Crear un nuevo registro de apuesta
-    const nuevaApuesta = {
-      monto: parsedMonto,
-      cuota: parseFloat(cuota),
-      fecha: new Date().toString(),
-      ganador: caballoSeleccionado,
-      ganancia: parsedMonto * cuota,
-      idUsuario: usuarioId,
-    };
-  
-    // Empujar los datos de la nueva apuesta a Firebase
-    push(apuestasRef, nuevaApuesta)
-      .then(() => {
-        // Reiniciar el estado después de la apuesta
-        setMonto('');
-        setCuota('');
-        setCaballoSeleccionado('');
-        // Agregar aquí cualquier otra lógica después de realizar la apuesta
-      })
-      .catch((error) => {
-        console.error('Error al crear la apuesta:', error);
+    try {
+      // Guardar la apuesta en Firestore
+      await addDoc(collection(firestore, `apuestas/carrerasCaballos/${usuarioId}`), {
+        monto: parsedMonto,
+        cuota: parseFloat(cuota),
+        fecha: new Date().toString(),
+        ganador: caballoSeleccionado,
+        ganancia: parsedMonto * cuota,
+        idUsuario: usuarioId,
       });
+      console.log("Apuesta realizada");
+      // Reiniciar el estado después de la apuesta
+      setMonto('');
+      setCuota('');
+      setCaballoSeleccionado('');
+    } catch (error) {
+      console.error('Error al guardar la apuesta:', error);
+      // Manejar el error, mostrar un mensaje al usuario, etc.
+    }
   };
 
   useEffect(() => {

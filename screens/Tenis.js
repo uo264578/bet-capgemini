@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { app } from '../database/firebase';
-import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot,addDoc, getDocs } from 'firebase/firestore';
 import { getDatabase, ref, push } from 'firebase/database';
 import { Ionicons } from '@expo/vector-icons'; 
 import { createStackNavigator } from '@react-navigation/stack';
+import { getAuth } from 'firebase/auth';
 
 const Stack = createStackNavigator();
 const firestore = getFirestore(app);
 const partidosTenisCollection = collection(firestore, 'PartidosTenis');
+const auth = getAuth(); 
 
 const PartidosTenisScreen = ({ navigation }) => {
   const [partidosTenis, setPartidosTenis] = useState([]);
@@ -21,9 +23,8 @@ const PartidosTenisScreen = ({ navigation }) => {
     setCuota(c);
   };
 
-  const handleConfirmarApuesta = () => {
-    const usuarioId = firebase.auth().currentUser.uid;
-    const db = getDatabase();
+  const handleConfirmarApuesta = async () => {
+    const usuarioId = auth.currentUser.uid;
   
     // Validar la cantidad apostada
     const parsedMonto = parseFloat(monto);
@@ -32,31 +33,25 @@ const PartidosTenisScreen = ({ navigation }) => {
       return;
     }
   
-    // Referencia a la tabla de apuestas
-    const apuestasRef = ref(db, `/apuesta`);
-  
-    // Crear un nuevo registro de apuesta
-    const nuevaApuesta = {
-      monto: parsedMonto,
-      cuota: parseFloat(cuota),
-      fecha: new Date().toString(),
-      ganador: equipoSeleccionado,
-      ganancia: parsedMonto * cuota,
-      idUsuario: usuarioId,
-    };
-  
-    // Empujar los datos de la nueva apuesta a Firebase
-    push(apuestasRef, nuevaApuesta)
-      .then(() => {
-        // Reiniciar el estado después de la apuesta
-        setMonto('');
-        setCuota('');
-        setEquipoSeleccionado('');
-        // Agregar aquí cualquier otra lógica después de realizar la apuesta
-      })
-      .catch((error) => {
-        console.error('Error al crear la apuesta:', error);
+    try {
+      // Guardar la apuesta en Firestore
+      await addDoc(collection(firestore, `apuestas/tenis/${usuarioId}`), {
+        monto: parsedMonto,
+        cuota: parseFloat(cuota),
+        fecha: new Date().toString(),
+        ganador: equipoSeleccionado,
+        ganancia: parsedMonto * cuota,
+        idUsuario: usuarioId,
       });
+      console.log("Apuesta realizada");
+      // Reiniciar el estado después de la apuesta
+      setMonto('');
+      setCuota('');
+      setEquipoSeleccionado('');
+    } catch (error) {
+      console.error('Error al guardar la apuesta:', error);
+      // Manejar el error, mostrar un mensaje al usuario, etc.
+    }
   };
 
   useEffect(() => {

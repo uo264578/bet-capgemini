@@ -15,6 +15,7 @@ const firestore = getFirestore(app);
 const partidosFutbolCollection = collection(firestore, 'partidosFutbol');
 const Stack = createStackNavigator();
 const auth = getAuth(); 
+
 export default function Futbol({ navigation }) {
   const [partidosFutbol, setPartidosFutbol] = useState([]);
   const [monto, setMonto] = useState('');
@@ -46,7 +47,7 @@ export default function Futbol({ navigation }) {
         ganancia: parsedMonto * cuota,
         idUsuario: usuarioId,
       });
-  
+      console.log("Apuesta realizada");
       // Reiniciar el estado después de la apuesta
       setMonto('');
       setCuota('');
