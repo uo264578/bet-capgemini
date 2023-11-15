@@ -2,18 +2,19 @@ import React, { useState, useEffect  } from 'react';
 import { View, Text,FlatList, Button, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { firebase } from '@react-native-firebase/database';
 import { app } from '../database/firebase';
-import { getFirestore, collection, onSnapshot, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot,addDoc, getDocs } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons'; 
 import Home from './Home';
 import Baloncesto from './Baloncesto';
 import Tenis from './Tenis';
 import CarrerasCaballos from './CarrerasCaballos';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getAuth } from 'firebase/auth';
 
 const firestore = getFirestore(app);
 const partidosFutbolCollection = collection(firestore, 'partidosFutbol');
 const Stack = createStackNavigator();
-
+const auth = getAuth(); 
 export default function Futbol({ navigation }) {
   const [partidosFutbol, setPartidosFutbol] = useState([]);
   const [monto, setMonto] = useState('');
@@ -25,8 +26,8 @@ export default function Futbol({ navigation }) {
     setCuota(c);
   };
 
-  const handleConfirmarApuesta = () => {
-    const usuarioId = firebase.auth().currentUser.uid;
+  const handleConfirmarApuesta = async () => {
+    const usuarioId = auth.currentUser.uid;
 
     // Validar la cantidad apostada
     const parsedMonto = parseFloat(monto);
@@ -35,20 +36,25 @@ export default function Futbol({ navigation }) {
       return;
     }
 
-    // Realizar la apuesta usando la cantidad, cuota y otros detalles
-    firebase.database().ref(`/apuestas/futbol/${usuarioId}`).push({
-      monto: parsedMonto,
-      cuota: parseFloat(cuota),
-      fecha: new Date().toString(),
-      ganador: equipoSeleccionado,
-      ganancia: parsedMonto * cuota, // Ganancia es igual a la cantidad apostada en este caso
-      idUsuario: usuarioId,
-    });
-
-    // Reiniciar el estado después de la apuesta
-    setMonto('');
-    setCuota('');
-    setEquipoSeleccionado('');
+    try {
+      // Guardar la apuesta en Firestore
+      await addDoc(collection(firestore, `apuestas/futbol/${usuarioId}`), {
+        monto: parsedMonto,
+        cuota: parseFloat(cuota),
+        fecha: new Date().toString(),
+        ganador: equipoSeleccionado,
+        ganancia: parsedMonto * cuota,
+        idUsuario: usuarioId,
+      });
+  
+      // Reiniciar el estado después de la apuesta
+      setMonto('');
+      setCuota('');
+      setEquipoSeleccionado('');
+    } catch (error) {
+      console.error('Error al guardar la apuesta:', error);
+      // Manejar el error, mostrar un mensaje al usuario, etc.
+    }
   };
 
   
